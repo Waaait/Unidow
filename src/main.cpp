@@ -15,23 +15,27 @@
 #include "graphics/rendering/texture.h"
 #include "graphics/models/cube.hpp"
 #include "graphics/models/lamp.hpp"
-//#include "graphics/models/item.hpp"
 #include "graphics/objects/model.h"
 
 #include "io/keyboard.h"
 #include "io/camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, double dt);
 
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 
 glm::mat4 transform = glm::mat4(1.0f);
 
+// LIGHT
 float x, y, z;
+float lightPosX, lightPosY, lightPosZ;
 
-Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
+// CAMERA
+Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main() {
 	int success;
@@ -73,60 +77,47 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	// SHADERS===============================
-	//Shader shader("assets/vertex_core.glsl", "assets/fragment_core.glsl");
 	Shader shader("assets/object.vs", "assets/object.fs");
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	Cube model(Material::white_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
-	model.init();
-	//Item model;
-	//model.loadModel("assets/models/paimon/scene.gltf");
-	//model.loadModel("assets/models/glTF-Sample-Models/1.0/Duck/glTF/Duck.gltf");
-	//model.loadModel("assets/models/glTF-Sample-Models/1.0/Box/glTF/Box.gltf");
+	//Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
+	//model.init();
 
-	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -.5f, .5f), glm::vec3(0.25f));
-	lamp.init();
+	const int numPlanet = 9;
+	Cube planet[numPlanet];
+	for (unsigned int i = 0; i < numPlanet; i++)
+	{
+		if (i == 0) i = 1;
+		planet[i] = Cube(Material::chrome, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
+		planet[i].init();
+	}
 
 	// LIGHTS
-	// 
-	//glm::vec3 pointLightPositions[] = {
-	//	glm::vec3(0.7f,  0.2f,  2.0f),
-	//	glm::vec3(2.3f, -3.3f, -4.0f)/*,
-	//	glm::vec3(-4.0f,  2.0f, -12.0f),
-	//	glm::vec3(0.0f,  0.0f, -3.0f)*/
-	//};
-	//Lamp lamps[4];
-	/*const int lampNum = 2;
-	Lamp lamps[lampNum];
-	for (unsigned int i = 0; i < lampNum; i++) {
-		lamps[i] = Lamp(glm::vec3(1.0f),
-			glm::vec4(0.05f, 0.05f, 0.05f, 1.0f), glm::vec4(0.8f, 0.8f, 0.8f, 1.0f), glm::vec4(1.0f),
-			1.0f, 0.07f, 0.032f,
-			pointLightPositions[i], glm::vec3(0.25f));
-		lamps[i].init();
-	}*/
 
-	/*SpotLight s = {
-		Camera::defaultCamera.cameraPos, Camera::defaultCamera.cameraFront,
-		glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(20.0f)),
-		1.0f, 0.07f, 0.032f,
-		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), glm::vec4(1.0f)
-	};*/
+	lightPosX = -1.0f;
+	lightPosY = 0.0f;
+	lightPosZ = 0.0f;
+
+	Lamp lamp(glm::vec3(0.9f,0.4f,0.1f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
+	lamp.init();
 
 	// TEXTURES_____________________________________
-	
-
 	x = 0.0f;
 	y = 0.0f;
 	z = 5.0f;
 
 	while (!glfwWindowShouldClose(window)) {
+		// calculate dt
+		double currentTime = glfwGetTime();
+		deltaTime = currentTime - lastFrame;
+		lastFrame = currentTime;
+
 		// process input
-		processInput(window);
+		processInput(window, deltaTime);
 
 		// render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(.0f, .0f, .0f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
@@ -141,36 +132,33 @@ int main() {
 		// create transformation
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
-		view = glm::translate(view, glm::vec3(-x, -y, -z));
+		view = camera.getViewMatrix();
 		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		//cube.render(shader);
-		model.render(shader);
+		//model.render(shader, 2.4f);
+
+		for (unsigned int i = 0; i < numPlanet; i++) {
+			planet[i].render(shader, 24.7f);
+		}
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
-		lamp.render(lampShader);
-		/*for (unsigned int i = 0; i < lampNum; i++) {
-			lamps[i].render(lampShader);
-		}*/
+		lamp.render(lampShader,glm::vec3(lightPosX, lightPosY, lightPosZ));
 
 
 		// send new frame to window
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
-	model.cleanup();
+	for (unsigned int i = 0; i < numPlanet; i++) {
+		planet[i].cleanup();
+	}
+	//model.cleanup();
 	lamp.cleanup();
-	//cube.cleanup();
-	/*for (unsigned int i = 0; i < lampNum; i++) {
-		lamps[i].cleanup();
-	}*/
 	glfwTerminate();
 	return 0;
 }
@@ -181,22 +169,52 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	SCR_HEIGHT = height;
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, double dt) {
 	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	// move obj
-	if (Keyboard::key(GLFW_KEY_A)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	// move light
+	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		lightPosX -= 0.5;
+		printf("light pos X %f\n", lightPosX);
 	}
-	if (Keyboard::key(GLFW_KEY_D)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_D)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		lightPosX += 0.5;
+		printf("light pos X %f\n", lightPosX);
 	}
-	if (Keyboard::key(GLFW_KEY_W)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_W)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightPosY += 0.5;
+		printf("light pos Y %f\n", lightPosY);
 	}
-	if (Keyboard::key(GLFW_KEY_S)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightPosY -= 0.5;
+		printf("light pos Y %f\n", lightPosY);
+	}
+
+	//move camera
+	if (Keyboard::key(GLFW_KEY_UP)) {
+		camera.updateCameraPos(CameraDirection::UP, dt);
+		printf("camera pos UP \n");
+	}
+	if (Keyboard::key(GLFW_KEY_DOWN)) {
+		camera.updateCameraPos(CameraDirection::DOWN, dt);
+		printf("camera pos DOWN \n");
+	}
+	if (Keyboard::key(GLFW_KEY_LEFT)) {
+		camera.updateCameraPos(CameraDirection::LEFT, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_RIGHT)) {
+		camera.updateCameraPos(CameraDirection::RIGHT, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_PAGE_DOWN)) {
+		camera.updateCameraPos(CameraDirection::BACKWARD, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_DELETE)) {
+		camera.updateCameraPos(CameraDirection::FORWARD, dt);
 	}
 }

@@ -29,7 +29,7 @@ void Texture::load(bool flip) {
 	GLenum colorMode = GL_RGB;
 	switch (nChannels) {
 	case 1:
-		colorMode = GL_RED;
+		colorMode = GL_BLUE;
 		break;
 	case 4:
 		colorMode = GL_RGBA;

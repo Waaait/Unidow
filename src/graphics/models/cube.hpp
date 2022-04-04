@@ -11,6 +11,7 @@ public:
 
     Material material;
 
+    Cube(){}
     Cube(Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
         : material(material), pos(pos), size(size) {}
     /*Cube(Material material, glm::vec3 pos, glm::vec3 size)
@@ -69,19 +70,20 @@ public:
             indices[i] = i;
         }
 
-        Texture tex0("assets/wooden.jpg", "material.diffuse");
+        Texture tex0("assets/texture/uranus.JPG", "material.diffuse");
         tex0.load();
 
-        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 } );
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 });
+        //mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 } );
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 }));
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
 
-    void render(Shader shader) {
+    void render(Shader shader, float deltaSpeed) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, pos);
         model = glm::scale(model, size);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+        model = glm::rotate(model, deltaSpeed * (float)glfwGetTime() * glm::radians(1.0f), glm::vec3(0.21f, 0.5f, 0.0f));
         shader.setMat4("model", model);
 
         shader.set3Float("material.ambient", material.ambient);
@@ -91,6 +93,7 @@ public:
 
         Model::render(shader);
     }
+
 };
 
 #endif

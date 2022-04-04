@@ -3,12 +3,12 @@
 Camera::Camera(glm::vec3 position)
 	: cameraPos(position),
 	worldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
-	yaw(0.0f),
+	yaw(-90.0f),
 	pitch(0.0f),
 	speed(2.5f),
 	sensitivity(1.0f),
 	zoom(45.0f),
-	cameraFront(glm::vec3(1.0f, 0.0f, 0.0f))
+	cameraFront(glm::vec3(0.0f, 0.0f, -1.0f))
 {
 	updateCameraVectors();
 }
@@ -67,10 +67,6 @@ void Camera::updateCameraZoom(double dy) {
 
 glm::mat4 Camera::getViewMatrix() {
 	return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-}
-
-float Camera::getZoom() {
-	return zoom;
 }
 
 void Camera::updateCameraVectors() {
