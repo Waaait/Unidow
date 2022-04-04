@@ -81,15 +81,15 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
-	model.init();
+	//Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
+	//model.init();
 
 	const int numPlanet = 9;
 	Cube planet[numPlanet];
 	for (unsigned int i = 0; i < numPlanet; i++)
 	{
 		if (i == 0) i = 1;
-		planet[i] = Cube(Material::red_plastic, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
+		planet[i] = Cube(Material::chrome, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
 		planet[i].init();
 	}
 
@@ -99,7 +99,7 @@ int main() {
 	lightPosY = 0.0f;
 	lightPosZ = 0.0f;
 
-	Lamp lamp(glm::vec3(0.9f,0.4f,0.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
+	Lamp lamp(glm::vec3(0.9f,0.4f,0.1f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
 	lamp.init();
 
 	// TEXTURES_____________________________________
@@ -138,12 +138,11 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		model.render(shader, 2.4f);
+		//model.render(shader, 2.4f);
 
 		for (unsigned int i = 0; i < numPlanet; i++) {
-			planet[i].render(shader, 2.4f);
+			planet[i].render(shader, 24.7f);
 		}
-
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
@@ -158,7 +157,7 @@ int main() {
 	for (unsigned int i = 0; i < numPlanet; i++) {
 		planet[i].cleanup();
 	}
-	model.cleanup();
+	//model.cleanup();
 	lamp.cleanup();
 	glfwTerminate();
 	return 0;

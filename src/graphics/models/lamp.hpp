@@ -27,7 +27,7 @@ public:
 		ambient(ambient),
 		diffuse(diffuse),
 		specular(specular),
-		Cube(Material::white_plastic, pos, size) {}
+		Cube(Material::jade, pos, size) {}
 
 	void render(Shader shader, glm::vec3 pos) {
 		// set light color
