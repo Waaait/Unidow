@@ -79,7 +79,7 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	Cube model(Material::green_rubber, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
 	model.init();
 
 	
@@ -127,10 +127,9 @@ int main() {
 		// process input
 		processInput(window);
 
-		
-
 		// render
-		glClearColor(0.8f, 0.8f, 0.7f, 0.1f);
+		glClearColor(.0f, .0f, .0f, 0.1f);
+		//glClearColor(0.8f, 0.8f, 0.7f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
