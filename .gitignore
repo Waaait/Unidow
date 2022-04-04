@@ -1,0 +1,7 @@
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+assimp-vc143-mtd.dll
+glfw3.dll
+lib/
+x64/
