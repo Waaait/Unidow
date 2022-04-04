@@ -34,7 +34,7 @@ public:
 		shader.set3Float("lightColor", lightColor);
 		this->pos = pos;
 
-		Cube::render(shader);
+		Cube::render(shader, 1.0f);
 	}
 };
 

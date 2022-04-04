@@ -151,7 +151,7 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		model.render(shader);
+		model.render(shader, 2.4f);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);

@@ -78,11 +78,11 @@ public:
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
 
-    void render(Shader shader) {
+    void render(Shader shader, float deltaSpeed) {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, pos);
         model = glm::scale(model, size);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+        model = glm::rotate(model, deltaSpeed * (float)glfwGetTime() * glm::radians(30.0f), glm::vec3(0.5f, 0.5f, 0.5f));
         shader.setMat4("model", model);
 
         shader.set3Float("material.ambient", material.ambient);
