@@ -69,10 +69,11 @@ public:
             indices[i] = i;
         }
 
-        Texture tex0("assets/wooden.jpg", "material.diffuse");
-        tex0.load();
+        /*Texture tex0("assets/wooden.jpg", "material.diffuse");
+        tex0.load();*/
 
-        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 } );
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, {  });
+        //mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 } );
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 }));
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
@@ -91,6 +92,7 @@ public:
 
         Model::render(shader);
     }
+
 };
 
 #endif

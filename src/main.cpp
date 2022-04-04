@@ -30,6 +30,7 @@ unsigned int SCR_HEIGHT = 600;
 glm::mat4 transform = glm::mat4(1.0f);
 
 float x, y, z;
+float lightPosX, lightPosY, lightPosZ;
 
 Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -78,14 +79,15 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	Cube model(Material::white_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube model(Material::green_rubber, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
 	model.init();
-	//Item model;
-	//model.loadModel("assets/models/paimon/scene.gltf");
-	//model.loadModel("assets/models/glTF-Sample-Models/1.0/Duck/glTF/Duck.gltf");
-	//model.loadModel("assets/models/glTF-Sample-Models/1.0/Box/glTF/Box.gltf");
 
-	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(-1.0f, -.5f, .5f), glm::vec3(0.25f));
+	
+	lightPosX = -1.0f;
+	lightPosY = -.5f;
+	lightPosZ = .5f;
+
+	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.25f));
 	lamp.init();
 
 	// LIGHTS
@@ -125,8 +127,10 @@ int main() {
 		// process input
 		processInput(window);
 
+		
+
 		// render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.8f, 0.8f, 0.7f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
@@ -148,13 +152,12 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		//cube.render(shader);
 		model.render(shader);
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
-		lamp.render(lampShader);
+		lamp.render(lampShader,glm::vec3(lightPosX, lightPosY, lightPosZ));
 		/*for (unsigned int i = 0; i < lampNum; i++) {
 			lamps[i].render(lampShader);
 		}*/
@@ -187,16 +190,24 @@ void processInput(GLFWwindow* window) {
 	}
 
 	// move obj
-	if (Keyboard::key(GLFW_KEY_A)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		lightPosX -= 0.5;
+		printf("light pos X %f\n", lightPosX);
 	}
-	if (Keyboard::key(GLFW_KEY_D)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_D)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		lightPosX += 0.5;
+		printf("light pos X %f\n", lightPosX);
 	}
-	if (Keyboard::key(GLFW_KEY_W)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_W)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightPosY += 0.5;
+		printf("light pos Y %f\n", lightPosY);
 	}
-	if (Keyboard::key(GLFW_KEY_S)) {
-		transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
+		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightPosY -= 0.5;
+		printf("light pos Y %f\n", lightPosY);
 	}
 }
