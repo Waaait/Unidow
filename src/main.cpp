@@ -21,17 +21,21 @@
 #include "io/camera.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, double dt);
 
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 
 glm::mat4 transform = glm::mat4(1.0f);
 
+// LIGHT
 float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
 
-Camera Camera::defaultCamera(glm::vec3(0.0f, 0.0f, 0.0f));
+// CAMERA
+Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 
 int main() {
 	int success;
@@ -77,28 +81,40 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+	Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
 	model.init();
+
+	const int numPlanet = 9;
+	Cube planet[numPlanet];
+	for (unsigned int i = 0; i < numPlanet; i++)
+	{
+		if (i == 0) i = 1;
+		planet[i] = Cube(Material::red_plastic, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
+		planet[i].init();
+	}
 
 	// LIGHTS
 
 	lightPosX = -1.0f;
-	lightPosY = -.5f;
-	lightPosZ = .5f;
+	lightPosY = 0.0f;
+	lightPosZ = 0.0f;
 
-	Lamp lamp(glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.25f));
+	Lamp lamp(glm::vec3(0.9f,0.4f,0.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
 	lamp.init();
 
 	// TEXTURES_____________________________________
-	
-
 	x = 0.0f;
 	y = 0.0f;
 	z = 5.0f;
 
 	while (!glfwWindowShouldClose(window)) {
+		// calculate dt
+		double currentTime = glfwGetTime();
+		deltaTime = currentTime - lastFrame;
+		lastFrame = currentTime;
+
 		// process input
-		processInput(window);
+		processInput(window, deltaTime);
 
 		// render
 		glClearColor(.0f, .0f, .0f, 0.1f);
@@ -116,13 +132,18 @@ int main() {
 		// create transformation
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(-x, -y, -z));
+		view = camera.getViewMatrix();
 		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
 		model.render(shader, 2.4f);
+
+		for (unsigned int i = 0; i < numPlanet; i++) {
+			planet[i].render(shader, 2.4f);
+		}
+
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
@@ -134,7 +155,9 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
+	for (unsigned int i = 0; i < numPlanet; i++) {
+		planet[i].cleanup();
+	}
 	model.cleanup();
 	lamp.cleanup();
 	glfwTerminate();
@@ -147,12 +170,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	SCR_HEIGHT = height;
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, double dt) {
 	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	// move obj
+	// move light
 	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
 		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		lightPosX -= 0.5;
@@ -172,5 +195,27 @@ void processInput(GLFWwindow* window) {
 		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightPosY -= 0.5;
 		printf("light pos Y %f\n", lightPosY);
+	}
+
+	//move camera
+	if (Keyboard::key(GLFW_KEY_UP)) {
+		camera.updateCameraPos(CameraDirection::UP, dt);
+		printf("camera pos UP \n");
+	}
+	if (Keyboard::key(GLFW_KEY_DOWN)) {
+		camera.updateCameraPos(CameraDirection::DOWN, dt);
+		printf("camera pos DOWN \n");
+	}
+	if (Keyboard::key(GLFW_KEY_LEFT)) {
+		camera.updateCameraPos(CameraDirection::LEFT, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_RIGHT)) {
+		camera.updateCameraPos(CameraDirection::RIGHT, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_PAGE_DOWN)) {
+		camera.updateCameraPos(CameraDirection::BACKWARD, dt);
+	}
+	if (Keyboard::key(GLFW_KEY_DELETE)) {
+		camera.updateCameraPos(CameraDirection::FORWARD, dt);
 	}
 }

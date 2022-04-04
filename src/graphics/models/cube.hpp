@@ -11,6 +11,7 @@ public:
 
     Material material;
 
+    Cube(){}
     Cube(Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
         : material(material), pos(pos), size(size) {}
     /*Cube(Material material, glm::vec3 pos, glm::vec3 size)
