@@ -16,6 +16,7 @@
 #include "graphics/models/cube.hpp"
 #include "graphics/models/lamp.hpp"
 #include "graphics/objects/model.h"
+#include "graphics/rendering/planet.h"
 
 #include "io/keyboard.h"
 #include "io/camera.h"
@@ -33,7 +34,7 @@ float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
 
 // CAMERA
-Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
+Camera camera(glm::vec3(8.0f, 0.0f, 30.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -80,16 +81,23 @@ int main() {
 	Shader shader("assets/object.vs", "assets/object.fs");
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
-	// MODELS
-	//Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
-	//model.init();
+	// PLANET
+	Planet system;
+	system.genList(system);
 
 	const int numPlanet = 9;
 	Cube planet[numPlanet];
 	for (unsigned int i = 0; i < numPlanet; i++)
 	{
-		if (i == 0) i = 1;
-		planet[i] = Cube(Material::chrome, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
+		glm::vec3 distance;
+		if (i == 0) {
+			distance = glm::vec3((2.0f * 1), 0.0, -1.0f);
+		}
+		else {
+			/*distance = glm::vec3((2.0f * (i+1) * system.getListitem(i).distance), 0.0, -1.0f);*/
+			distance = glm::vec3((2.0f * (i + 1)), 0.0, -1.0f);
+		}
+		planet[i] = Cube(system.getListitem(i), Material::red_rubber, distance, glm::vec3(0.75f));
 		planet[i].init();
 	}
 
@@ -99,7 +107,7 @@ int main() {
 	lightPosY = 0.0f;
 	lightPosZ = 0.0f;
 
-	Lamp lamp(glm::vec3(0.9f,0.4f,0.1f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
+	Lamp lamp(glm::vec3(0.9f,0.6f,0.3f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(1.75f));
 	lamp.init();
 
 	// TEXTURES_____________________________________
@@ -147,7 +155,7 @@ int main() {
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
-		lamp.render(lampShader,glm::vec3(lightPosX, lightPosY, lightPosZ));
+		lamp.render(lampShader, glm::vec3(lightPosX, lightPosY, lightPosZ), Planet::Sun.selfRotationSpeed);
 
 
 		// send new frame to window
@@ -176,22 +184,18 @@ void processInput(GLFWwindow* window, double dt) {
 
 	// move light
 	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		lightPosX -= 0.5;
 		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_D)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		lightPosX += 0.5;
 		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_W)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightPosY += 0.5;
 		printf("light pos Y %f\n", lightPosY);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightPosY -= 0.5;
 		printf("light pos Y %f\n", lightPosY);
 	}
@@ -199,11 +203,9 @@ void processInput(GLFWwindow* window, double dt) {
 	//move camera
 	if (Keyboard::key(GLFW_KEY_UP)) {
 		camera.updateCameraPos(CameraDirection::UP, dt);
-		printf("camera pos UP \n");
 	}
 	if (Keyboard::key(GLFW_KEY_DOWN)) {
 		camera.updateCameraPos(CameraDirection::DOWN, dt);
-		printf("camera pos DOWN \n");
 	}
 	if (Keyboard::key(GLFW_KEY_LEFT)) {
 		camera.updateCameraPos(CameraDirection::LEFT, dt);
@@ -211,10 +213,10 @@ void processInput(GLFWwindow* window, double dt) {
 	if (Keyboard::key(GLFW_KEY_RIGHT)) {
 		camera.updateCameraPos(CameraDirection::RIGHT, dt);
 	}
-	if (Keyboard::key(GLFW_KEY_PAGE_DOWN)) {
+	if (Keyboard::key(GLFW_KEY_COMMA)) {
 		camera.updateCameraPos(CameraDirection::BACKWARD, dt);
 	}
-	if (Keyboard::key(GLFW_KEY_DELETE)) {
+	if (Keyboard::key(GLFW_KEY_PERIOD)) {
 		camera.updateCameraPos(CameraDirection::FORWARD, dt);
 	}
 }

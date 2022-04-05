@@ -27,12 +27,13 @@ public:
 		ambient(ambient),
 		diffuse(diffuse),
 		specular(specular),
-		Cube(Material::jade, pos, size) {}
+		Cube(Planet::Sun, Material::jade, pos, size) {}
 
-	void render(Shader shader, glm::vec3 pos) {
+	void render(Shader shader, glm::vec3 pos, float speed) {
 		// set light color
 		shader.set3Float("lightColor", lightColor);
 		this->pos = pos;
+		this->planet.selfRotationSpeed = speed;
 
 		Cube::render(shader, 1.0f);
 	}
