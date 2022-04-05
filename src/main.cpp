@@ -83,7 +83,15 @@ int main() {
 
 	// PLANET
 	Planet system;
-	system.genList(system);
+	system.setListitem(0, Planet::Mercury);
+	system.setListitem(1, Planet::Venus);
+	system.setListitem(2, Planet::Earth);
+	system.setListitem(3, Planet::Mars);
+	system.setListitem(4, Planet::Jupiter);
+	system.setListitem(5, Planet::Saturn);
+	system.setListitem(6, Planet::Uranus);
+	system.setListitem(7, Planet::Neptune);
+	system.setListitem(8, Planet::Pluto);
 
 	const int numPlanet = 9;
 	Cube planet[numPlanet];

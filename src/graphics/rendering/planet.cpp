@@ -25,16 +25,3 @@ Planet Planet::getListitem(int i){
 char* Planet::getPath() {
 	return (char*)path;
 }
-
-void genList(Planet sys) {
-	sys.setListitem(0, Planet::Mercury);
-	sys.setListitem(1, Planet::Venus);
-	sys.setListitem(2, Planet::Earth);
-	sys.setListitem(3, Planet::Mars);
-	sys.setListitem(4, Planet::Jupiter);
-	sys.setListitem(5, Planet::Saturn);
-	sys.setListitem(6, Planet::Uranus);
-	sys.setListitem(7, Planet::Neptune);
-	sys.setListitem(8, Planet::Pluto);
-}
-
