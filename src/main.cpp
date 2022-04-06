@@ -1,4 +1,8 @@
 #include <iostream>
+#include <algorithm>
+#include <list>
+#include <string>
+#include <fstream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
@@ -20,11 +24,20 @@
 #include "io/keyboard.h"
 #include "io/camera.h"
 
+using namespace std;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, double dt);
+glm::vec3 generateCode();
+int checkPrime(int num);
+void primePowerInit();
+int primePowerCheck(glm::vec3 code);
 
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
+
+const int PRIME_UPPERBOUND = 100;
+list<float> primePower;
 
 glm::mat4 transform = glm::mat4(1.0f);
 
@@ -33,15 +46,13 @@ float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
 
 // CAMERA
-Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main() {
 	int success;
 	char infoLog[512];
-
-	std::cout << "Hello, world!" << std::endl;
 
 	glfwInit();
 
@@ -81,25 +92,37 @@ int main() {
 	Shader lampShader("assets/object.vs", "assets/lamp.fs");
 
 	// MODELS
-	//Cube model(Material::red_plastic, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.25f));
-	//model.init();
-
-	const int numPlanet = 9;
-	Cube planet[numPlanet];
+	primePowerInit();
+	const int numPlanet = 3;
+	Cube room[numPlanet][numPlanet][numPlanet];
 	for (unsigned int i = 0; i < numPlanet; i++)
 	{
-		if (i == 0) i = 1;
-		planet[i] = Cube(Material::chrome, glm::vec3((2.0f * i), 0.0, -1.0f), glm::vec3(0.75f));
-		planet[i].init();
+		for (unsigned int j = 0; j < numPlanet; j++)
+		{
+			for (unsigned int k = 0; k < numPlanet; k++)
+			{
+				glm::vec3 newCode = generateCode();
+				printf("new code (%f, %f, %f)\n", newCode.x, newCode.y, newCode.z);
+				Material mat = Material::white_plastic;
+				if (primePowerCheck(newCode)) {
+					mat = Material::red_plastic;
+				}
+				else {
+					mat = Material::green_plastic;
+				}
+				room[i][j][k] = Cube(newCode, mat, glm::vec3((float)i, (float)j, -(float)k), glm::vec3(0.75f));
+				room[i][j][k].init();
+			}
+		}
 	}
 
 	// LIGHTS
 
 	lightPosX = -1.0f;
 	lightPosY = 0.0f;
-	lightPosZ = 0.0f;
+	lightPosZ = 1.0f;
 
-	Lamp lamp(glm::vec3(0.9f,0.4f,0.1f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(2.25f));
+	Lamp lamp(glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.75f));
 	lamp.init();
 
 	// TEXTURES_____________________________________
@@ -117,7 +140,7 @@ int main() {
 		processInput(window, deltaTime);
 
 		// render
-		glClearColor(.0f, .0f, .0f, 0.1f);
+		glClearColor(.7f, .8f, .9f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
@@ -138,26 +161,38 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		//model.render(shader, 2.4f);
-
 		for (unsigned int i = 0; i < numPlanet; i++) {
-			planet[i].render(shader, 24.7f);
+			for (unsigned int j = 0; j < numPlanet; j++)
+			{
+				for (unsigned int k = 0; k < numPlanet; k++)
+				{
+					room[i][j][k].render(shader, 24.7f);
+				}
+			}
+			
 		}
 
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
-		lamp.render(lampShader,glm::vec3(lightPosX, lightPosY, lightPosZ));
-
+		lamp.render(lampShader, glm::vec3(lightPosX, lightPosY, lightPosZ));
 
 		// send new frame to window
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
 	for (unsigned int i = 0; i < numPlanet; i++) {
-		planet[i].cleanup();
+		for (unsigned int j = 0; j < numPlanet; j++)
+		{
+			for (unsigned int k = 0; k < numPlanet; k++)
+			{
+				room[i][j][k].cleanup();
+			}
+		}
+
 	}
-	//model.cleanup();
+
 	lamp.cleanup();
 	glfwTerminate();
 	return 0;
@@ -176,34 +211,24 @@ void processInput(GLFWwindow* window, double dt) {
 
 	// move light
 	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		lightPosX -= 0.5;
-		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_D)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		lightPosX += 0.5;
-		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_W)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightPosY += 0.5;
-		printf("light pos Y %f\n", lightPosY);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
-		//transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightPosY -= 0.5;
-		printf("light pos Y %f\n", lightPosY);
 	}
 
 	//move camera
 	if (Keyboard::key(GLFW_KEY_UP)) {
 		camera.updateCameraPos(CameraDirection::UP, dt);
-		printf("camera pos UP \n");
 	}
 	if (Keyboard::key(GLFW_KEY_DOWN)) {
 		camera.updateCameraPos(CameraDirection::DOWN, dt);
-		printf("camera pos DOWN \n");
 	}
 	if (Keyboard::key(GLFW_KEY_LEFT)) {
 		camera.updateCameraPos(CameraDirection::LEFT, dt);
@@ -217,4 +242,103 @@ void processInput(GLFWwindow* window, double dt) {
 	if (Keyboard::key(GLFW_KEY_DELETE)) {
 		camera.updateCameraPos(CameraDirection::FORWARD, dt);
 	}
+}
+
+glm::vec3 generateCode() {
+	int vecList[3];
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		vecList[i] = 0;
+	}
+	for (unsigned int i = 0; i <3; i++)
+	{
+		float num = 1 + (rand() % 100);
+		vecList[i] = num;
+	}
+	return glm::vec3(vecList[0], vecList[1], vecList[2]);
+}
+
+int checkPrime(int num)
+{
+	if (num < 2 || num == 4) {
+		return 0;
+	}
+	else {
+		int x = num / 2;
+		for (int i = 2; i < x; i++)
+		{
+			if (num % i == 0)
+			{
+				return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
+void primePowerInit() {
+	// find all prime within 100
+	for (unsigned int i = 0; i < PRIME_UPPERBOUND; i++)
+	{
+		if (checkPrime(i)) {
+			primePower.push_back(i);
+		}
+	}
+
+	// prime ^ 2
+	for (auto i : primePower) {
+		int square = (int)i * i;
+		if (square < PRIME_UPPERBOUND) {
+			primePower.push_back(square);
+		}
+		else {
+			break;
+		}
+	}
+
+	// prime ^ 3
+	for (auto i : primePower) {
+		int square = (int)i * i * i;
+		if (square < PRIME_UPPERBOUND) {
+			primePower.push_back(square);
+		}
+		else {
+			break;
+		}
+	}
+
+	// prime ^ 4
+	for (auto i : primePower) {
+		int square = (int)i * i;
+		square *= square;
+		if (square < PRIME_UPPERBOUND) {
+			primePower.push_back(square);
+		}
+		else {
+			break;
+		}
+	}
+
+	// prime ^ 5
+	for (auto i : primePower) {
+		int square = (int)i * i;
+		square *= square;
+		square *= i;
+		if (square < PRIME_UPPERBOUND) {
+			primePower.push_back(square);
+		}
+		else {
+			break;
+		}
+	}
+}
+
+int primePowerCheck(glm::vec3 code) {
+	for (auto i : primePower) {
+		if (code.x == i || code.y == i || code.z == i) {
+			return 0;
+		}
+	}
+	return 1;
 }
