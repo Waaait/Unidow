@@ -41,6 +41,9 @@ list<float> primePower;
 
 const int NUM_CUBE = 4;
 
+int dangerRoom = 0;
+int totalRoom = NUM_CUBE * NUM_CUBE * NUM_CUBE;
+
 glm::mat4 transform = glm::mat4(1.0f);
 
 // LIGHT
@@ -108,6 +111,7 @@ int main() {
 				if (primePowerCheck(newCode)) {
 					mat = Material::red_plastic;
 					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
+					dangerRoom++;
 				}
 				else {
 					mat = Material::jade;
@@ -117,6 +121,10 @@ int main() {
 			}
 		}
 	}
+
+	printf("================ CUBE REPORT ================ \n");
+	printf("Number of rooms with traps: %d .\n",dangerRoom);
+	printf("Number of rooms that are safe: %d .\n", totalRoom - dangerRoom);
 
 	// LIGHTS
 
@@ -223,6 +231,12 @@ void processInput(GLFWwindow* window, double dt) {
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
 		lightPosY -= 0.5;
+	}
+	if (Keyboard::keyWentDown(GLFW_KEY_Q)) {
+		lightPosZ -= 0.5;
+	}
+	if (Keyboard::keyWentDown(GLFW_KEY_E)) {
+		lightPosZ += 0.5;
 	}
 
 	//move camera
