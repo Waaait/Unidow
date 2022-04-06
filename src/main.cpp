@@ -104,10 +104,10 @@ int main() {
 			for (unsigned int k = 0; k < NUM_CUBE; k++)
 			{
 				glm::vec3 newCode = generateCode();
-				printf("new code (%f, %f, %f)\n", newCode.x, newCode.y, newCode.z);
 				Material mat = Material::white_plastic;
 				if (primePowerCheck(newCode)) {
 					mat = Material::red_plastic;
+					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
 				}
 				else {
 					mat = Material::jade;
@@ -337,10 +337,12 @@ void primePowerInit() {
 }
 
 int primePowerCheck(glm::vec3 code) {
-	for (auto i : primePower) {
-		if (code.x == i || code.y == i || code.z == i) {
-			return 0;
+	list<float>::iterator it;
+	for ( it = primePower.begin();  it != primePower.end();  it++)
+	{
+		if (code.x == *it || code.y == *it || code.z == *it) {
+			return 1;
 		}
 	}
-	return 1;
+	return 0;
 }
