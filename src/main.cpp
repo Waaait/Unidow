@@ -39,6 +39,8 @@ unsigned int SCR_HEIGHT = 600;
 const int PRIME_UPPERBOUND = 100;
 list<float> primePower;
 
+const int NUM_CUBE = 4;
+
 glm::mat4 transform = glm::mat4(1.0f);
 
 // LIGHT
@@ -93,13 +95,13 @@ int main() {
 
 	// MODELS
 	primePowerInit();
-	const int numPlanet = 3;
-	Cube room[numPlanet][numPlanet][numPlanet];
-	for (unsigned int i = 0; i < numPlanet; i++)
+	
+	Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
+	for (unsigned int i = 0; i < NUM_CUBE; i++)
 	{
-		for (unsigned int j = 0; j < numPlanet; j++)
+		for (unsigned int j = 0; j < NUM_CUBE; j++)
 		{
-			for (unsigned int k = 0; k < numPlanet; k++)
+			for (unsigned int k = 0; k < NUM_CUBE; k++)
 			{
 				glm::vec3 newCode = generateCode();
 				printf("new code (%f, %f, %f)\n", newCode.x, newCode.y, newCode.z);
@@ -108,7 +110,7 @@ int main() {
 					mat = Material::red_plastic;
 				}
 				else {
-					mat = Material::green_plastic;
+					mat = Material::jade;
 				}
 				room[i][j][k] = Cube(newCode, mat, glm::vec3((float)i, (float)j, -(float)k), glm::vec3(0.75f));
 				room[i][j][k].init();
@@ -161,10 +163,10 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		for (unsigned int i = 0; i < numPlanet; i++) {
-			for (unsigned int j = 0; j < numPlanet; j++)
+		for (unsigned int i = 0; i < NUM_CUBE; i++) {
+			for (unsigned int j = 0; j < NUM_CUBE; j++)
 			{
-				for (unsigned int k = 0; k < numPlanet; k++)
+				for (unsigned int k = 0; k < NUM_CUBE; k++)
 				{
 					room[i][j][k].render(shader, 24.7f);
 				}
@@ -182,10 +184,10 @@ int main() {
 		glfwPollEvents();
 	}
 
-	for (unsigned int i = 0; i < numPlanet; i++) {
-		for (unsigned int j = 0; j < numPlanet; j++)
+	for (unsigned int i = 0; i < NUM_CUBE; i++) {
+		for (unsigned int j = 0; j < NUM_CUBE; j++)
 		{
-			for (unsigned int k = 0; k < numPlanet; k++)
+			for (unsigned int k = 0; k < NUM_CUBE; k++)
 			{
 				room[i][j][k].cleanup();
 			}
