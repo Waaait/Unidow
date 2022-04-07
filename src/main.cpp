@@ -108,15 +108,18 @@ int main() {
 			{
 				glm::vec3 newCode = generateCode();
 				Material mat = Material::white_plastic;
+				const char* path;
 				if (primePowerCheck(newCode)) {
-					mat = Material::red_plastic;
+					mat = Material::white_plastic;
+					path = "assets/texture/cubered.jpg";
 					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
 					dangerRoom++;
 				}
 				else {
-					mat = Material::jade;
+					path = "assets/texture/cubewhite.jpeg";
+					mat = Material::white_plastic;
 				}
-				room[i][j][k] = Cube(newCode, mat, glm::vec3((float)i, (float)j, -(float)k), glm::vec3(0.75f));
+				room[i][j][k] = Cube((char*)path,newCode, mat, glm::vec3((float)i, (float)j, -(float)k), glm::vec3(0.75f));
 				room[i][j][k].init();
 			}
 		}
