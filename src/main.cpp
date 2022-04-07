@@ -40,6 +40,7 @@ const int PRIME_UPPERBOUND = 100;
 list<float> primePower;
 
 const int NUM_CUBE = 4;
+Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
 
 int dangerRoom = 0;
 int totalRoom = NUM_CUBE * NUM_CUBE * NUM_CUBE;
@@ -49,6 +50,7 @@ glm::mat4 transform = glm::mat4(1.0f);
 // LIGHT
 float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
+float cubePosX, cubePosY, cubePosZ;
 
 // CAMERA
 Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
@@ -99,7 +101,7 @@ int main() {
 	// MODELS
 	primePowerInit();
 	
-	Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
+	
 	for (unsigned int i = 0; i < NUM_CUBE; i++)
 	{
 		for (unsigned int j = 0; j < NUM_CUBE; j++)
@@ -108,15 +110,18 @@ int main() {
 			{
 				glm::vec3 newCode = generateCode();
 				Material mat = Material::white_plastic;
+				cubePosX = (float)i*2.0;
+				cubePosY = (float)j*2.0;
+				cubePosZ = (float)k*2.0;
 				if (primePowerCheck(newCode)) {
 					mat = Material::red_plastic;
-					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
+					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", cubePosX, cubePosY, cubePosZ, newCode.x, newCode.y, newCode.z);
 					dangerRoom++;
 				}
 				else {
 					mat = Material::jade;
 				}
-				room[i][j][k] = Cube(newCode, mat, glm::vec3((float)i, (float)j, -(float)k), glm::vec3(0.75f));
+				room[i][j][k] = Cube(newCode, mat, glm::vec3(cubePosX, cubePosY, -cubePosZ), glm::vec3(0.75f));
 				room[i][j][k].init();
 			}
 		}
