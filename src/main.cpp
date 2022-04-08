@@ -41,6 +41,8 @@ list<float> primePower;
 
 const int NUM_CUBE = 4;
 Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
+float cubePosX, cubePosY, cubePosZ;
+float SCALE = 1.5;
 
 int dangerRoom = 0;
 int totalRoom = NUM_CUBE * NUM_CUBE * NUM_CUBE;
@@ -53,7 +55,7 @@ float lightPosX, lightPosY, lightPosZ;
 float cubePosX, cubePosY, cubePosZ;
 
 // CAMERA
-Camera camera(glm::vec3(0.0f, 0.0f, 15.0f));
+Camera camera(glm::vec3(3.0f, 3.0f, 15.0f));
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -110,18 +112,22 @@ int main() {
 			{
 				glm::vec3 newCode = generateCode();
 				Material mat = Material::white_plastic;
-				cubePosX = (float)i*2.0;
-				cubePosY = (float)j*2.0;
-				cubePosZ = (float)k*2.0;
+				const char* path;
+				cubePosX = (float)i * SCALE;
+				cubePosY = (float)j * SCALE;
+				cubePosZ = (float)k * SCALE;
 				if (primePowerCheck(newCode)) {
-					mat = Material::red_plastic;
-					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", cubePosX, cubePosY, cubePosZ, newCode.x, newCode.y, newCode.z);
+					mat = Material::white_plastic;
+					path = "assets/texture/cubered.jpg";
+					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
 					dangerRoom++;
 				}
 				else {
-					mat = Material::jade;
+					//path = "assets/texture/cubewhite.jpeg";
+					path = "assets/texture/cubeblue.jpg";
+					mat = Material::white_plastic;
 				}
-				room[i][j][k] = Cube(newCode, mat, glm::vec3(cubePosX, cubePosY, -cubePosZ), glm::vec3(0.75f));
+				room[i][j][k] = Cube((char*)path,newCode, mat, glm::vec3(cubePosX, cubePosY, -cubePosZ), glm::vec3(0.75f));
 				room[i][j][k].init();
 			}
 		}
@@ -135,7 +141,7 @@ int main() {
 
 	lightPosX = -1.0f;
 	lightPosY = 0.0f;
-	lightPosZ = 1.0f;
+	lightPosZ = 5.0f;
 
 	Lamp lamp(glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.75f));
 	lamp.init();
@@ -273,7 +279,7 @@ glm::vec3 generateCode() {
 	}
 	for (unsigned int i = 0; i <3; i++)
 	{
-		float num = 1 + (rand() % 100);
+		float num = 1 + (rand() % 99);
 		vecList[i] = num;
 	}
 	return glm::vec3(vecList[0], vecList[1], vecList[2]);
