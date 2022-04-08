@@ -6,14 +6,15 @@
 
 class Cube : public Model {
 public:
+    char* path;
     glm::vec3 pos;
     glm::vec3 size;
 
     Material material;
 
     Cube(){}
-    Cube(glm::vec3(code),Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
-        : material(material), pos(pos), size(size) {}
+    Cube(char* path, glm::vec3(code),Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
+        : path(path),material(material), pos(pos), size(size) {}
 
     void init() {
         int noVertices = 36;
@@ -68,11 +69,11 @@ public:
             indices[i] = i;
         }
 
-        //Texture tex0("assets/texture/uranus.JPG", "material.diffuse");
-        //tex0.load();
+        Texture tex0((char*)path, "material.diffuse");
+        tex0.load();
 
-        //mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 });
-        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, {  } );
+        mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 });
+        //mesh = Mesh(Vertex::genList(vertices, noVertices), indices, {  } );
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 }));
         //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
@@ -81,7 +82,7 @@ public:
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, pos);
         model = glm::scale(model, size);
-        model = glm::rotate(model, deltaSpeed * (float)glfwGetTime() * glm::radians(3.0f), glm::vec3(0.5f, 0.5f, 0.5f));
+        //model = glm::rotate(model, deltaSpeed * (float)glfwGetTime() * glm::radians(3.0f), glm::vec3(0.5f, 0.5f, 0.5f));
         shader.setMat4("model", model);
 
         shader.set3Float("material.ambient", material.ambient);

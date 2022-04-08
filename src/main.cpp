@@ -40,6 +40,10 @@ const int PRIME_UPPERBOUND = 100;
 list<float> primePower;
 
 const int NUM_CUBE = 4;
+<<<<<<< HEAD
+=======
+Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
+>>>>>>> 20609cdbed4af2bd0efc4a20947ddb9d6df7eb7e
 float cubePosX, cubePosY, cubePosZ;
 float SCALE = 1.5;
 
@@ -51,6 +55,7 @@ glm::mat4 transform = glm::mat4(1.0f);
 // LIGHT
 float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
+float cubePosX, cubePosY, cubePosZ;
 
 // CAMERA
 Camera camera(glm::vec3(3.0f, 3.0f, 15.0f));
@@ -101,7 +106,7 @@ int main() {
 	// MODELS
 	primePowerInit();
 	
-	Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
+	
 	for (unsigned int i = 0; i < NUM_CUBE; i++)
 	{
 		for (unsigned int j = 0; j < NUM_CUBE; j++)
