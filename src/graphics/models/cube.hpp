@@ -74,8 +74,6 @@ public:
 
         mesh = Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 });
         //mesh = Mesh(Vertex::genList(vertices, noVertices), indices, {  } );
-        //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, { tex0 }));
-        //meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
 
     void render(Shader shader, float deltaSpeed) {

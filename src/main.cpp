@@ -7,11 +7,6 @@
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
-#include <fstream>
-#include <sstream>
-#include <streambuf>
-#include <string>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -40,10 +35,7 @@ const int PRIME_UPPERBOUND = 100;
 list<float> primePower;
 
 const int NUM_CUBE = 4;
-<<<<<<< HEAD
-=======
 Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
->>>>>>> 20609cdbed4af2bd0efc4a20947ddb9d6df7eb7e
 float cubePosX, cubePosY, cubePosZ;
 float SCALE = 1.5;
 
@@ -55,7 +47,6 @@ glm::mat4 transform = glm::mat4(1.0f);
 // LIGHT
 float x, y, z;
 float lightPosX, lightPosY, lightPosZ;
-float cubePosX, cubePosY, cubePosZ;
 
 // CAMERA
 Camera camera(glm::vec3(3.0f, 3.0f, 15.0f));
@@ -78,7 +69,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COPMPAT, GL_TRUE);
 #endif
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Unidow", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CUBE", NULL, NULL);
 	if (window == NULL) { // window not created
 		std::cout << "Could not create window." << std::endl;
 		glfwTerminate();
@@ -106,12 +97,11 @@ int main() {
 	// MODELS
 	primePowerInit();
 	
-	
-	for (unsigned int i = 0; i < NUM_CUBE; i++)
+	for (int i = 0; i < NUM_CUBE; i++)
 	{
-		for (unsigned int j = 0; j < NUM_CUBE; j++)
+		for (int j = 0; j < NUM_CUBE; j++)
 		{
-			for (unsigned int k = 0; k < NUM_CUBE; k++)
+			for (int k = 0; k < NUM_CUBE; k++)
 			{
 				glm::vec3 newCode = generateCode();
 				Material mat = Material::white_plastic;
@@ -122,11 +112,10 @@ int main() {
 				if (primePowerCheck(newCode)) {
 					mat = Material::white_plastic;
 					path = "assets/texture/cubered.jpg";
-					printf("Room (%d, %d, %d) has traps with code (%f, %f, %f). \n", i, j, k, newCode.x, newCode.y, newCode.z);
+					printf("Room (%d, %d, %d) has traps with code (%d, %d, %d). \n", i, j, -k, (int)newCode.x, (int)newCode.y, (int)newCode.z);
 					dangerRoom++;
 				}
 				else {
-					//path = "assets/texture/cubewhite.jpeg";
 					path = "assets/texture/cubeblue.jpg";
 					mat = Material::white_plastic;
 				}
@@ -137,7 +126,7 @@ int main() {
 	}
 
 	printf("================ CUBE REPORT ================ \n");
-	printf("Number of rooms with traps: %d .\n",dangerRoom);
+	printf("Number of rooms with traps: %d .\n", dangerRoom);
 	printf("Number of rooms that are safe: %d .\n", totalRoom - dangerRoom);
 
 	// LIGHTS
@@ -164,7 +153,8 @@ int main() {
 		processInput(window, deltaTime);
 
 		// render
-		glClearColor(.7f, .8f, .9f, 0.1f);
+		//glClearColor(.7f, .8f, .9f, 0.1f);
+		glClearColor(.0f, .0f, .0f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
