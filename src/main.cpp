@@ -1,3 +1,13 @@
+/*
+*	Weiting Li
+*	Cube Movie Simulation (but with materials, not texture)
+*	COMP 3831 Computer Graphics
+*	April 2022
+*	Main sources of referece:
+*	- LearnOpenGL website https://learnopengl.com/
+*	- @Michael Grieco on YouTube https://www.youtube.com/channel/UCCIfx6nIIWeOCogxGg4j3xQ
+*	Key features: cube rendering, shader, light source, materials
+*/
 #include <iostream>
 #include <algorithm>
 #include <list>
@@ -126,11 +136,6 @@ int main() {
 
 	Lamp lamp(glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.75f));
 	lamp.init();
-
-	// TEXTURES_____________________________________
-	x = 0.0f;
-	y = 0.0f;
-	z = 5.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		// calculate dt
