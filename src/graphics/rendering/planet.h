@@ -6,8 +6,6 @@
 struct Planet {
 	const char* path;
 	float selfRotationSpeed;
-	//float selfRotationX;
-	//float selfRotationY;
 	float distance;
 	float size;
 

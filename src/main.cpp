@@ -1,3 +1,12 @@
+/*
+*	Weiting Li
+*	Solar System self-rotaion COmparison Simulation
+*	April 2022
+*	Main sources of referece:
+*	- LearnOpenGL website https://learnopengl.com/
+*	- @Michael Grieco on YouTube https://www.youtube.com/channel/UCCIfx6nIIWeOCogxGg4j3xQ
+*	Key features: cube rendering, shader, light source, load images
+*/
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -137,8 +146,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		shader.activate();
-
-		shader.activate();
 		shader.set3Float("light.position", lamp.pos);
 
 		shader.set3Float("light.ambient", lamp.ambient);
@@ -190,25 +197,21 @@ void processInput(GLFWwindow* window, double dt) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	// move light
+	// move light(the sun) using AWSD
 	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
 		lightPosX -= 0.5;
-		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_D)) {
 		lightPosX += 0.5;
-		printf("light pos X %f\n", lightPosX);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_W)) {
 		lightPosY += 0.5;
-		printf("light pos Y %f\n", lightPosY);
 	}
 	if (Keyboard::keyWentDown(GLFW_KEY_S)) {
 		lightPosY -= 0.5;
-		printf("light pos Y %f\n", lightPosY);
 	}
 
-	//move camera
+	//move camera using UP/DOWN/LEFT/RIGHT arrow key; using comma and period key to zoom in and out
 	if (Keyboard::key(GLFW_KEY_UP)) {
 		camera.updateCameraPos(CameraDirection::UP, dt);
 	}
