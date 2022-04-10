@@ -6,7 +6,7 @@
 *	Main sources of referece:
 *	- LearnOpenGL website https://learnopengl.com/
 *	- @Michael Grieco on YouTube https://www.youtube.com/channel/UCCIfx6nIIWeOCogxGg4j3xQ
-*	Key features: cube rendering, shader, light source, 
+*	Key features: cube rendering, shader, light source, texture(image) loading
 */
 #include <iostream>
 #include <algorithm>
