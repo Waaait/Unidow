@@ -1,3 +1,13 @@
+/*
+*	Weiting Li
+*	Cube Movie Simulation
+*	COMP 3831 Computer Graphics Project
+*	April 2022
+*	Main sources of referece:
+*	- LearnOpenGL website https://learnopengl.com/
+*	- @Michael Grieco on YouTube https://www.youtube.com/channel/UCCIfx6nIIWeOCogxGg4j3xQ
+*	Key features: cube rendering, shader, light source, 
+*/
 #include <iostream>
 #include <algorithm>
 #include <list>
@@ -31,25 +41,25 @@ int primePowerCheck(glm::vec3 code);
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 
-const int PRIME_UPPERBOUND = 100;
-list<float> primePower;
+const int PRIME_UPPERBOUND = 100;					// UPPER BOUND
+list<float> primePower;								// list to store prime power
 
-const int NUM_CUBE = 4;
+const int NUM_CUBE = 4;								// GIANT CUBE DIMENTION
 Cube room[NUM_CUBE][NUM_CUBE][NUM_CUBE];
-float cubePosX, cubePosY, cubePosZ;
-float SCALE = 1.5;
+float cubePosX, cubePosY, cubePosZ;	
+float SCALE = 1.5;									// distance between each cube
 
-int dangerRoom = 0;
-int totalRoom = NUM_CUBE * NUM_CUBE * NUM_CUBE;
+int dangerRoom = 0;									// counter to keep record of trapped rooms
+int totalRoom = NUM_CUBE * NUM_CUBE * NUM_CUBE;		// total number of rooms; it's a cube so there're edge ^ 3 in total rooms
 
-glm::mat4 transform = glm::mat4(1.0f);
+glm::mat4 transform = glm::mat4(1.0f);				// tranformation matricies
 
 // LIGHT
 float x, y, z;
-float lightPosX, lightPosY, lightPosZ;
+float lightPosX, lightPosY, lightPosZ;				// global variables for light's position
 
 // CAMERA
-Camera camera(glm::vec3(3.0f, 3.0f, 15.0f));
+Camera camera(glm::vec3(3.0f, 3.0f, 15.0f));		// camera object
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -112,7 +122,7 @@ int main() {
 				if (primePowerCheck(newCode)) {
 					mat = Material::white_plastic;
 					path = "assets/texture/cubered.jpg";
-					printf("Room (%d, %d, %d) has traps with code (%d, %d, %d). \n", i, j, -k, (int)newCode.x, (int)newCode.y, (int)newCode.z);
+					printf(" Room (%d, %d, %d) has traps with code (%d, %d, %d). \n", i, j, -k, (int)newCode.x, (int)newCode.y, (int)newCode.z);
 					dangerRoom++;
 				}
 				else {
@@ -125,23 +135,24 @@ int main() {
 		}
 	}
 
-	printf("================ CUBE REPORT ================ \n");
-	printf("Number of rooms with traps: %d .\n", dangerRoom);
-	printf("Number of rooms that are safe: %d .\n", totalRoom - dangerRoom);
+	// print a report to the terminal window
+	printf(" ================ CUBE REPORT ================ \n");
+	printf(" Prime power list: \n");
+	list<float>::iterator it;
+	for (it = primePower.begin(); it != primePower.end(); it++)
+	{
+		printf(" %d ", (int) * it);
+	}
+	printf("\n Number of rooms with traps: %d .\n", dangerRoom);
+	printf(" Number of rooms that are safe: %d .\n", totalRoom - dangerRoom);
 
 	// LIGHTS
-
 	lightPosX = -1.0f;
 	lightPosY = 0.0f;
 	lightPosZ = 5.0f;
 
 	Lamp lamp(glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(lightPosX, lightPosY, lightPosZ), glm::vec3(0.75f));
 	lamp.init();
-
-	// TEXTURES_____________________________________
-	x = 0.0f;
-	y = 0.0f;
-	z = 5.0f;
 
 	while (!glfwWindowShouldClose(window)) {
 		// calculate dt
@@ -152,13 +163,11 @@ int main() {
 		// process input
 		processInput(window, deltaTime);
 
-		// render
-		//glClearColor(.7f, .8f, .9f, 0.1f);
+		// render background
 		glClearColor(.0f, .0f, .0f, 0.1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-		shader.activate();
-
+		// activate shader
 		shader.activate();
 		shader.set3Float("light.position", lamp.pos);
 
@@ -175,17 +184,21 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
+		// render each cubic room
 		for (unsigned int i = 0; i < NUM_CUBE; i++) {
 			for (unsigned int j = 0; j < NUM_CUBE; j++)
 			{
 				for (unsigned int k = 0; k < NUM_CUBE; k++)
 				{
-					room[i][j][k].render(shader, 24.7f);
+					// to make each cubic room rotate, uncomment the rotation matricies in render method in cube.hpp
+					// the magic number 25.0 is the delta speed set for rotation
+					room[i][j][k].render(shader, 25.0f);
 				}
 			}
 			
 		}
 
+		// render lamp
 		lampShader.activate();
 		lampShader.setMat4("view", view);
 		lampShader.setMat4("projection", projection);
@@ -206,8 +219,8 @@ int main() {
 		}
 
 	}
-
 	lamp.cleanup();
+
 	glfwTerminate();
 	return 0;
 }
@@ -219,11 +232,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window, double dt) {
+	// hit space key to exit the GLFW window
 	if (Keyboard::key(GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	// move light
+	// move light using AWSD, adjust Z-value using Q and E
 	if (Keyboard::keyWentDown(GLFW_KEY_A)) {
 		lightPosX -= 0.5;
 	}
@@ -243,7 +257,7 @@ void processInput(GLFWwindow* window, double dt) {
 		lightPosZ += 0.5;
 	}
 
-	//move camera
+	// move camera using UP/DOWN/LEFT/RIGHT arrow key; use comma and period to zoom in and out
 	if (Keyboard::key(GLFW_KEY_UP)) {
 		camera.updateCameraPos(CameraDirection::UP, dt);
 	}
@@ -256,14 +270,16 @@ void processInput(GLFWwindow* window, double dt) {
 	if (Keyboard::key(GLFW_KEY_RIGHT)) {
 		camera.updateCameraPos(CameraDirection::RIGHT, dt);
 	}
-	if (Keyboard::key(GLFW_KEY_PAGE_DOWN)) {
+	if (Keyboard::key(GLFW_KEY_COMMA)) {
 		camera.updateCameraPos(CameraDirection::BACKWARD, dt);
 	}
-	if (Keyboard::key(GLFW_KEY_DELETE)) {
+	if (Keyboard::key(GLFW_KEY_PERIOD)) {
 		camera.updateCameraPos(CameraDirection::FORWARD, dt);
 	}
 }
-
+/**
+* generate numbers randomly
+**/
 glm::vec3 generateCode() {
 	int vecList[3];
 	for (unsigned int i = 0; i < 3; i++)
@@ -272,12 +288,14 @@ glm::vec3 generateCode() {
 	}
 	for (unsigned int i = 0; i <3; i++)
 	{
-		float num = 1 + (rand() % 99);
+		float num = 1 + (rand() % (int)PRIME_UPPERBOUND);
 		vecList[i] = num;
 	}
 	return glm::vec3(vecList[0], vecList[1], vecList[2]);
 }
-
+/**
+* Check to see if a number is prime
+**/
 int checkPrime(int num)
 {
 	if (num < 2 || num == 4) {
@@ -296,7 +314,9 @@ int checkPrime(int num)
 
 	return 1;
 }
-
+/**
+* A trivial method to find all prime powers with in the upper bound
+**/
 void primePowerInit() {
 	// find all prime within 100
 	for (unsigned int i = 0; i < PRIME_UPPERBOUND; i++)
@@ -352,8 +372,22 @@ void primePowerInit() {
 			break;
 		}
 	}
+	// prime ^ 6
+	for (auto i : primePower) {
+		int square = (int)i * i;
+		square = square * square * square;
+		if (square < PRIME_UPPERBOUND) {
+			primePower.push_back(square);
+		}
+		else {
+			break;
+		}
+	}
 }
 
+/**
+* Iterate through the list and see if any numbers in code is prime power
+**/
 int primePowerCheck(glm::vec3 code) {
 	list<float>::iterator it;
 	for ( it = primePower.begin();  it != primePower.end();  it++)

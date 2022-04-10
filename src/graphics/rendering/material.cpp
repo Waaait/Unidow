@@ -34,11 +34,4 @@ Material Material::mix(Material m1, Material m2, float mix) {
 		m1.specular * mix + m2.specular * (1 - mix),
 		m1.shininess * mix + m2.shininess * (1 - mix)
 	};
-
-	/*
-	(x + y) / 2 = .5(x + y)
-
-	mix = .5
-	= x * .5 + y * (1 - .5)
-	*/
 }

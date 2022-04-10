@@ -20,17 +20,12 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 
-// uniform sampler2D texture0;
-// uniform sampler2D texture1;
-
 uniform Material material;
 uniform Light light;
 
 uniform vec3 viewPos;
 
 void main() {
-	// FragColor = mix(texture(texture0, TexCoord), texture(texture1, TexCoord), mixVal);
-
 	// ambient
 	vec3 ambient = light.ambient * material.ambient;
 

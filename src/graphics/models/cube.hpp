@@ -12,9 +12,9 @@ public:
 
     Material material;
 
-    Cube(){}
-    Cube(char* path, glm::vec3(code),Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
-        : path(path),material(material), pos(pos), size(size) {}
+    Cube() {}
+    Cube(char* path, glm::vec3(code), Material material, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 size = glm::vec3(1.0f, 1.0f, 1.0f))
+        : path(path), material(material), pos(pos), size(size) {}
 
     void init() {
         int noVertices = 36;
