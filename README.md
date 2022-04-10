@@ -11,7 +11,7 @@ What I work on is a simulation based on the Canadian cult film called CUBE. Rand
  
  Below is a screenshots when running codes in master branch.
 
-![CUBE](/screenshots/CUBE.JPG?raw=true "CUBE")
+![CUBE](/screenshots/CUBEGIF.gif?raw=true "CUBE")
 
 # CUBE in branch materialCUBE
 Slightly different from the master branch result, this branch produce a CUBE that is loaded with materials only (not texture, i.e. picture).
