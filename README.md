@@ -3,7 +3,7 @@ OpenGL projects of cube/lighting/Shader/Material. There are three branches that 
 Users can adjust lamp's position using A/W/S/D/Q/E keys, and move camera using UP/DOWN/RIGHT/LEFT/COMMA/PERIOD keys.
 
 # CUBE in master branch
- I work on is a simulation based on the Canadian cult film called CUBE. Rand() function will generate codes for each cube, and, if any of the number in
+What I work on is a simulation based on the Canadian cult film called CUBE. Rand() function will generate codes for each cube, and, if any of the number in
  the coordinates is prime power, then the room is tarpped & should be attached with a red picture to indicate it's dangerous. Light will also reflect differently
  when moved to different position.
  
